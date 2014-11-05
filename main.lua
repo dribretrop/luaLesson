@@ -13,7 +13,7 @@ local centerY = display.contentCenterY
 
 -- set up forward references
 local spawnEnemylocal startGamelocal gameTitlelocal scoreTxtlocal score = 0
-local hitPlanetlocal planetDamagelocal planet--local planetDamage
+local hitPlanetlocal planetDamagelocal planetlocal level1local level2local level3--local planetDamage
 -- preload audio
 local sndBg = audio.loadSound("Bg.mp3")
 local sndKill = audio.loadSound("boing-1.wav")
@@ -63,12 +63,11 @@ end
 ]]
 
 function spawnEnemy()
-	local enemy = display.newImage("beetleship.png")
+	 enemy = display.newImage("beetleship.png")
 	enemy.alpha = 1	--enemy.x = math.random(20, display.contentWidth-20)
-	--enemy.y = math.random(20, display.contentHeight-20)				if math.random(2)==1 then			enemy.x = math.random(-100 , -10)			else			enemy.x = math.random(display.contentWidth+10, display.contentWidth+100)		end		enemy.y = math.random(display.contentHeight)				--= 		enemy:addEventListener("tap", shipSmash)		enemy.trans = transition.to(enemy, {x=centerX, y=centerY, time=3500, onComplete=hitPlanet })		
+	--enemy.y = math.random(20, display.contentHeight-20)				if math.random(2)==1 then			enemy.x = math.random(-100 , -10)			else			enemy.x = math.random(display.contentWidth+10, display.contentWidth+100)		end		enemy.y = math.random(display.contentHeight)				--= 		enemy:addEventListener("tap", shipSmash)		--enemy.trans = transition.to(enemy, {time=3500 ,x=centerX, y=centerY, onComplete=hitPlanet })		if score<100 then level1()			else if score<200 then level2()				else level3()			end		end		
 	--transition.to(enemy, { time=1500, x=math.random(20,display.contentWidth-20), y=math.random(20,display.contentHeight-30), alpha=1})
-	
-end--------------------------------------------------------------------function planetDamage()	local function goAway()		planet.xScale = 1		planet.yScale = 1	end	transition.to(planet,{ time=100, xScale=1.2, yScale=1.2, onComplete = goAway })	--#outlaw transition.cancel(planet)end--------------------------------------------------------------------function hitPlanet(obj)	display.remove(obj)	planetDamage()	audio.play(sndBlast)	spawnEnemy()end
+end-------------------------------------------------------------------function level1()	enemy.trans = transition.to(enemy, {time=4000 ,x=centerX, y=centerY, onComplete=hitPlanet })endfunction level2()	enemy.trans = transition.to(enemy, {time=2000 ,x=centerX, y=centerY, onComplete=hitPlanet })endfunction level3()	enemy.trans = transition.to(enemy, {time=1000 ,x=centerX, y=centerY, onComplete=hitPlanet })end--------------------------------------------------------------------function planetDamage()	local function goAway()		planet.xScale = 1		planet.yScale = 1	end	transition.to(planet,{ time=100, xScale=1.2, yScale=1.2, onComplete = goAway })		--#outlaw transition.cancel(planet)end--------------------------------------------------------------------function hitPlanet(obj)	display.remove(obj)	planetDamage()	audio.play(sndBlast)	score = score -30	scoreTxt.text = "Score : "..score	if (score<=0) then		local gameOver = display.newText("GAME OVER", 300, 300,"Helvetica", 30)		gameOver.x = centerX		gameOver.y = centerY		local function endGame(obj)			display.remove(obj)		end		transition.to(planet,{time=100, onComplete=endGame})		else		spawnEnemy()	endend
 ---------------------------------------------------------------------
 function shipSmash(event)
 	local obj = event.target
