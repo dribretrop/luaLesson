@@ -13,7 +13,7 @@ local centerY = display.contentCenterY
 
 -- set up forward references
 local spawnEnemylocal startGamelocal gameTitlelocal scoreTxtlocal score = 0
-
+local hitPlanetlocal planetDamagelocal planet--local planetDamage
 -- preload audio
 local sndBg = audio.loadSound("Bg.mp3")
 local sndKill = audio.loadSound("boing-1.wav")
@@ -24,14 +24,14 @@ local sndLose = audio.loadSound("wahwahwah.mp3")
 -- create play screen
 
 local function createPlayScreen()
-	audio.play(sndBg)
+	--audio.play(sndBg)
 	local background = display.newImage("background.png")
 	background.x = centerX    --set position
 	background.y =  10
 	background.alpha = 0
 	--background:addEventListener("tap", shipSmash)
 		
-	local planet = display.newImage("planet.png")
+    planet = display.newImage("planet.png")
 	planet.x = centerX
 	planet.y = centerY --display.contentHeight + 30
 	planet.alpha = 0
@@ -50,7 +50,7 @@ local function createPlayScreen()
 					--spawnEnemy()
 					startGame()
 		end
-		transition.to(planet, { time=2000 , alpha=1, xScale=2, yScale=2, x=centerX, y=centerY, onComplete = showTitle } )
+		transition.to(planet, { time=2000 , alpha=1, xScale=1, yScale=1, x=centerX, y=centerY, onComplete = showTitle } )
   	   --transition.to(planet, { time= 2000, x=100})	
 end
 ---------------------------------------------------------------------- 	   
@@ -64,26 +64,25 @@ end
 
 function spawnEnemy()
 	local enemy = display.newImage("beetleship.png")
-	enemy.x = math.random(20, display.contentWidth-20)
-	enemy.y = math.random(20, display.contentHeight-20)
-	enemy.alpha = .1
-	transition.to(enemy, { time=1500, x=math.random(20,display.contentWidth-20), y=math.random(20,display.contentHeight-30), alpha=1})
-	enemy:addEventListener("tap", shipSmash)
-end
+	enemy.alpha = 1	--enemy.x = math.random(20, display.contentWidth-20)
+	--enemy.y = math.random(20, display.contentHeight-20)				if math.random(2)==1 then			enemy.x = math.random(-100 , -10)			else			enemy.x = math.random(display.contentWidth+10, display.contentWidth+100)		end		enemy.y = math.random(display.contentHeight)				--= 		enemy:addEventListener("tap", shipSmash)		enemy.trans = transition.to(enemy, {x=centerX, y=centerY, time=3500, onComplete=hitPlanet })		
+	--transition.to(enemy, { time=1500, x=math.random(20,display.contentWidth-20), y=math.random(20,display.contentHeight-30), alpha=1})
+	
+end--------------------------------------------------------------------function planetDamage()	local function goAway()		planet.xScale = 1		planet.yScale = 1	end	transition.to(planet,{ time=100, xScale=1.2, yScale=1.2, onComplete = goAway })	--#outlaw transition.cancel(planet)end--------------------------------------------------------------------function hitPlanet(obj)	display.remove(obj)	planetDamage()	audio.play(sndBlast)	spawnEnemy()end
 ---------------------------------------------------------------------
 function shipSmash(event)
 	local obj = event.target
 	display.remove(obj)
-	audio.play(sndBlast)	score = score +28	scoreTxt.text = "Scroe :  ".. score	spawnEnemy()
+	audio.play(sndKill)	transition.cancel(obj.trans)	score = score +28	scoreTxt.text = "Score : "..score	spawnEnemy()
 	return true
 end
 -------------------------------------------------------------------	
 function startGame()
-	local  text = display.newText( "Tap to start.", 0, 0, "Helvetica", 15)
-	text.x = centerX
-	text.y = display.contentHeight - 20
-	text.alpha = .1
-	text:setTextColor(238, 255, 178)	transition.to(text, { time=200, alpha=1})		local function goAway(event)		audio.play(sndBlast)		display.remove(event.target)		text = nil		display.remove(gameTitle)		scoreTxt = display.newText("Score : 0", 0, 0, "Helvetica",22)		scoreTxt.x = centerX		scoreTxt.y = 10		spawnEnemy()		--return true	end	text:addEventListener("tap", goAway)end
+	local  logo = display.newText( "Tap to start.", 0, 0, "Helvetica", 15)
+	logo.x = centerX
+	logo.y = display.contentHeight - 20
+	logo.alpha = .1
+	logo:setTextColor(238, 255, 178)	transition.to(logo, { time=200, alpha=1})			local function goAway(event)		audio.play(sndBlast)		display.remove(event.target)		logo = nil		display.remove(gameTitle)		scoreTxt = display.newText("Score : 0", 0, 0, "Helvetica",22)		scoreTxt.x = centerX		scoreTxt.y = 10		score = 0		spawnEnemy()		--return true	end	logo:addEventListener("tap", goAway)end
 	
 ----------------------------------------------------------------------- 
 --gameStart()
